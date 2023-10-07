@@ -223,7 +223,7 @@ def count_repeated_paragraphs (text):
     return repeated_paragraphs
 
 def replace_interactively (text, old, new, scope=55):
-    """Replace one substring to another in the text in th interaction mode.
+    """Replace one substring to another in the text in the interaction mode.
 
     str `text` - text in which to conduct replacement;
     str `old` - substring to be replaced;
