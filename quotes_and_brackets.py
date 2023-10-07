@@ -1,4 +1,19 @@
 def get_quotes (lang='all', level='primary'):
+    """Get quotation marks used in a particular language.
+
+    str `lang` - ISO code of the language, default - "all",
+        meaning that all quotation marks should be returned;
+    str `level` - level of quotation marks to be returned, two options: 
+        - "primary" - primary quotation marks (default);
+        - "secondary" - quotation marks used inside the primary quotation marks;
+    return set/list - set of all quotation marks if `lang` equals "all",
+        list of tuples, each tuple is of lenth 2, containing opening and closing
+        quotation marks.
+
+    The source of the quotation marks is Wikipedia:
+    https://en.wikipedia.org/wiki/Quotation_mark#Summary_table 
+    """
+
     if lang == 'all':
         return set('«»"\'<>‹›„“‚‘’⹂”「」『』﹃﹄﹁﹂《》〈〉⟪⟫⟨⟩❝❞❛❜〝〞〟❮❯')
         
@@ -155,6 +170,12 @@ def get_quotes (lang='all', level='primary'):
                 return []
             
 def quotes_to_str_by_lang (lang):
+    """Get string representation of the quotation marks of a particular language.
+
+    str `lang` - ISO code of the language.
+    return str - string representation of the quotation marks.
+    """
+
     quotes_list = []
     for q in get_quotes(lang):
         for c in q:
@@ -162,6 +183,13 @@ def quotes_to_str_by_lang (lang):
     return ''.join(sorted(quotes_list))
 
 def brackets_to_str (brackets):
+    """Get string representation of brackets returned by the `get_quotes` function.
+
+    list `brackets` - list of tuples, each tuple is of length 2, containing opening and
+        closing quotation marks.
+    return str - string representation of brackets.
+    """
+
     brackets_list = []
     for b in brackets:
         for c in b:
