@@ -1,4 +1,12 @@
 def get_alphabet (lang='en', all_scripts=False):
+    """Get all the symbols used in a particular language alphabet.
+
+    str `lang` - ISO language code, default: "en";
+    bool `all_scripts` - if True, terurn symbols of all the scripts of
+        the specified language, default: False;
+    return set - set of symbols used in a particular language alphabet.
+    """
+    
     for l in ['ja', 'zh']:
         if lang == l:
             file = open(f'alphabets/{l}.txt', 'r', encoding='UTF-8')
@@ -441,16 +449,24 @@ def get_alphabet (lang='en', all_scripts=False):
         # Zulu
         'zu': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     }
-    if all_scripts == False:
-        return set(alphabets[lang])
-    else:
+
+    if all_scripts:
         result = dict()
         for key, value in alphabets.items():
             if key == lang or key.startswith(f'{lang}.'):
                 result[key] = set(value)
         return result
+    else:
+        return set(alphabets[lang])
 
 def get_text_alphabet (text=None, file=None):
+    """Get all the symbols of the text.
+
+    str `text` - text from which to obtain symbols;
+    str `file` - if `text` is not specified the function tries to get
+        text from the `file` path;
+    return set - set of all the symbols of the text.
+    """
     space_characters = set(' \n')
     if text != None:
         return set(text.upper()) - space_characters
