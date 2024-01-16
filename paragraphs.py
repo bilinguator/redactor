@@ -254,3 +254,23 @@ def replace_interactively (text, old, new, scope=55):
             if input(f'{c} → {new}? ') != '':
                 text = text[:start] + new + text[end:]
     return text
+
+def join_strophes (text, delimiter='<delimiter>', start_line=2, min_line_breaks=2):
+    """Join strophes with <delimiter>, so they constitute separate paragraphs.
+    Strophe in this case is the part of a text, separated by more than one line breaks (\\n).
+
+    str `text` - text in which to join strophes;
+    str `delimiter` - glue with which join lines in strophes;
+    int `start_line` - 0-based index of the first line where function starts to act;
+    int `min_line_breaks` - minimal line breaks count between strophes;
+    return str - text with the strophes joined.
+    """
+
+    text = text.split('\n')
+    omitted_lines = text[:start_line]
+    text = '\n'.join([line.strip() for line in text[start_line:]])
+    text = [delimiter.join(re.split('\n+', line.strip()))
+            for line in re.split(f'\n{{{min_line_breaks},}}', text)
+            if line.strip() != '']
+    text = '\n'.join(omitted_lines + text)
+    return text
