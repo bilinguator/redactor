@@ -107,7 +107,7 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
     
     regex += chapter if numbering_first else ''
     regex += delimiter
-    regex += '\w+' if with_title else ''
+    regex += '.+' if with_title else ''
     
     text = text.split('\n')
     paragraphs = list()
@@ -273,4 +273,18 @@ def join_strophes (text, delimiter='<delimiter>', start_line=2, min_line_breaks=
             for line in re.split(f'\n{{{min_line_breaks},}}', text)
             if line.strip() != '']
     text = '\n'.join(omitted_lines + text)
+    return text
+
+def detach_paragraphs (text, tags, delimiter):
+    """Detach paragraphs with specified tags which are glued with delimiter.
+
+    str `text` - text in which to detach paragraphs;
+    list `tags` - list of str of tags;
+    str `delimiter` - string-glue to be replaced with \\n;
+    return str - text with paragraphs detached. 
+    """
+    
+    for tag in tags:
+        text = text.replace(f'{delimiter}<{tag}>', f'\n<{tag}>')
+        text = text.replace(f'</{tag}>{delimiter}',  f'</{tag}>\n')
     return text
