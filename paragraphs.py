@@ -96,9 +96,9 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
 
     regex = '' if numbering_first else chapter
     if numbering == 'arabic':
-        regex = f'{regex}[0-9]+'.strip()
+        regex = f'{regex}[0-9１２３４５６７８９]+'.strip()
     elif numbering == 'roman':
-        regex = f'{regex}[IVXLCDMGH]+'.strip()
+        regex = f'{regex}[IVXLCDMivxlcdmⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅬⅭⅮⅯⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹⅺⅻⅼⅽⅾⅿ]+'.strip()
     elif numbering in ['ja', 'zh']:
         numerals = '〇一七万三丗两九二五亿仟伍佰億兆兩八六十千卄卅卌叁四廾廿念拾捌柒玖百皕肆萬貳贰陆陸零'
         regex = f'{regex}[{numerals}]+'.strip()
