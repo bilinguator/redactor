@@ -15,7 +15,8 @@ def print_paragraphs (text, paragraphs, with_number=True, delimiter='\n\n'):
         result.append(text[i])
         result[-1] = f'{str(i)}\n{result[-1]}' if with_number else result[-1]
     print(delimiter.join(result))
-    
+
+
 def search_in_paragraphs (text, query, case_matters=False):
     """Get numbers of paragraphs containing a particular query substring with counts
         of the query.
@@ -38,6 +39,7 @@ def search_in_paragraphs (text, query, case_matters=False):
         if count > 0:
             result[i] = count
     return result
+
 
 def print_paragraphs_by_query (text, query, case_matters=False):
     """Print paragraphs containing a particular query substring.
@@ -62,6 +64,7 @@ def print_paragraphs_by_query (text, query, case_matters=False):
                 .replace(query.upper(), f'\033[1;31m{query.upper()}\033[0m')
     if len(result) > 0:
         print('\n\n'.join(result))
+
 
 def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_title=False,
                      numbering_first=False):
@@ -122,7 +125,8 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
     else:
         print('No paragraphs detected.')
         return set()
-    
+
+
 def tag_paragraphs (text, paragraphs, tag='h1'):
     """Enclose specified paragraphs of the text in tags.
 
@@ -139,6 +143,7 @@ def tag_paragraphs (text, paragraphs, tag='h1'):
             text[i] = f'<{tag}>{text[i]}</{tag}>'
     return '\n'.join(text)
 
+
 def search_paragraphs_by_regex (text, regex):
     """Get numbers of paragraphs matching regular expression.
 
@@ -154,6 +159,7 @@ def search_paragraphs_by_regex (text, regex):
             paragraphs.append(i)
     return set(paragraphs)
 
+
 def print_paragraphs_by_regex (text, regex):
     """Print paragraphs matching regular expression.
 
@@ -167,6 +173,7 @@ def print_paragraphs_by_regex (text, regex):
         if bool(re.fullmatch(regex, text[i].strip())):
             paragraphs.append(i)
     print_paragraphs('\n'.join(text), paragraphs)
+
 
 def tag_characters (text, paragraphs, characters, dialogue_delimiter, tag='b'):
     """Enclose characters names in the play to the specified tags.
@@ -190,6 +197,7 @@ def tag_characters (text, paragraphs, characters, dialogue_delimiter, tag='b'):
                 break
     return '\n'.join(text)
 
+
 def remove_paragraphs (text, paragraphs):
     """Remove paragraphs from the text.
 
@@ -203,6 +211,7 @@ def remove_paragraphs (text, paragraphs):
         if i in paragraphs:
             del text[i]
     return '\n'.join(text)
+
 
 def count_repeated_paragraphs (text):
     """Count repeated paragraphs.
@@ -221,6 +230,7 @@ def count_repeated_paragraphs (text):
             repeated_paragraphs[paragraph] = paragraph_count
             
     return repeated_paragraphs
+
 
 def replace_interactively (text, old, new, scope=55):
     """Replace one substring to another in the text in the interaction mode.
@@ -255,6 +265,7 @@ def replace_interactively (text, old, new, scope=55):
                 text = text[:start] + new + text[end:]
     return text
 
+
 def join_strophes (text, delimiter='<delimiter>', start_line=2, min_line_breaks=2):
     """Join strophes with <delimiter>, so they constitute separate paragraphs.
     Strophe in this case is the part of a text, separated by more than one line breaks (\\n).
@@ -275,6 +286,7 @@ def join_strophes (text, delimiter='<delimiter>', start_line=2, min_line_breaks=
     text = '\n'.join(omitted_lines + text)
     return text
 
+
 def detach_paragraphs (text, tags, delimiter):
     """Detach paragraphs with specified tags which are glued with delimiter.
 
@@ -288,3 +300,17 @@ def detach_paragraphs (text, tags, delimiter):
         text = text.replace(f'{delimiter}<{tag}>', f'\n<{tag}>')
         text = text.replace(f'</{tag}>{delimiter}',  f'</{tag}>\n')
     return text
+
+
+def trim_paragraphs (text, characters):
+    """Trim leading and trailing characters specified in `symbols` in every
+    paragraph of the `text`.
+    
+    str `text` - text where to trim paragraphs;
+    str `characters` - characters to be trimmed.
+    
+    return str - text with paragraphs trimmed.
+    """
+    
+    text = [paragraph.strip(characters) for paragraph in text.split('\n')]
+    return '\n'.join(text)
