@@ -81,6 +81,18 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
             "四", etc.);
         - "text" for non-numeric characters; suitable if numerals in words are
             presented ("One", "Two", "Three", etc.)
+        - "ar", "fa" or "ur" for Eastern Arabic numerals ("۰", "۱", "۲", etc.),
+            used in Arabic, Persian and Urdu languages;
+        - "abjad" for Abjad numerals ("ا", "ب", "ج", etc.);
+        - "indian" for languages of India: Bengali, Devanagari, Tamil, etc.
+        - "th" for Thai ("๑", "๒", "๓", etc.);
+        - "lo" for Lao ("໑", "໒", "໓", etc.);
+        - "tibetic" for Tibetic ("༡", "༢", "༣", etc.);
+        - "my" for Burmese ("၁", "၂", "၃", etc.);
+        - "km" for Khmer ("១", "២", "៣", etc.);
+        - "mn" for Mongolian ("᠑", "᠒", "᠓", etc.);
+        - "lif" for Limbu ("᥇", "᥈", "᥉", etc.);
+
     str `delimiter` - delimiter among the chapter-numbering and title parts;
     bool `with_title` - specifies if chapters have titles;
     bool `numbering_first` - specifies if numbering precedes chapter key word
@@ -99,14 +111,33 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
 
     regex = '' if numbering_first else chapter
     if numbering == 'arabic':
-        regex = f'{regex}[0-9１２３４５６７８９]+'.strip()
+        regex = f'{regex}[0-9１２３４５６７８９①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂⒃⒄⒅⒆⒇⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛⓪⓫⓬⓭⓮⓯⓰⓱⓲⓳⓴⓵⓶⓷⓸⓹⓺⓻⓼⓽⓾⓿0⃣1⃣2⃣3⃣4⃣5⃣6⃣7⃣8⃣9⃣🔟]+'.strip()
     elif numbering == 'roman':
         regex = f'{regex}[IVXLCDMivxlcdmⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅬⅭⅮⅯⅰⅱⅲⅳⅴⅵⅶⅷⅸⅹⅺⅻⅼⅽⅾⅿ]+'.strip()
-    elif numbering in ['ja', 'zh']:
-        numerals = '〇一七万三丗两九二五亿仟伍佰億兆兩八六十千卄卅卌叁四廾廿念拾捌柒玖百皕肆萬貳贰陆陸零'
-        regex = f'{regex}[{numerals}]+'.strip()
     elif numbering == 'text':
         regex = f'{regex} \D+'.strip()
+    elif numbering in ['ja', 'zh']:
+        regex = f'{regex}[〇一七万三丗两九二五亿仟伍佰億兆兩八六十千卄卅卌叁四廾廿念拾捌柒玖百皕肆萬貳贰陆陸零]+'.strip()
+    elif numbering in ['ar', 'fa', 'ur']:
+        regex = f'{regex}[۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩]+'.strip()
+    elif numbering == 'abjad':
+        regex = f'{regex}[أبجدﻩوﺯﺡﻁﻱﻙﻝﻡﻥﺱﻉﻑصﻕﺭﺵﺕﺙﺥﺫﺽﻅﻍ]+'.strip()
+    elif numbering == 'indian':
+        regex = f'{regex}[०१२३४५६७८९০১২৩৪৫৬৭৮৯୦୧୨୩୪୫୬୭୮୯௦௧௨௩௪௫௬௭௮௯౦౧౨౩౪౫౬౭౮౯೦೧೨೩೪೫೬೭೮೯൦൧൨൩൪൫൬൭൮൯]+'.strip()
+    elif numbering == 'th':
+        regex = f'{regex}[๐๑๒๓๔๕๖๗๘๙]+'.strip()
+    elif numbering == 'lo':
+        regex = f'{regex}[໐໑໒໓໔໕໖໗໘໙]+'.strip()
+    elif numbering == 'tibetic':
+        regex = f'{regex}[༠༡༢༣༤༥༦༧༨༩]+'.strip()
+    elif numbering == 'my':
+        regex = f'{regex}[၀၁၂၃၄၅၆၇၈၉]+'.strip()
+    elif numbering == 'km':
+        regex = f'{regex}[០១២៣៤៥៦៧៨៩]+'.strip()
+    elif numbering == 'mn':
+        regex = f'{regex}[᠐᠑᠒᠓᠔᠕᠖᠗᠘᠙]+'.strip()
+    elif numbering == 'lif':
+        regex = f'{regex}[᥆᥇᥈᥉᥊᥋᥌᥍᥎᥏]+'.strip()
     
     regex += chapter if numbering_first else ''
     regex += delimiter
@@ -118,7 +149,7 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
         if bool(re.fullmatch(regex, text[i].strip())):
             paragraphs.append(i)
     
-    if bool(paragraphs):        
+    if bool(paragraphs):
         for i in paragraphs:
             print(i, text[i], sep='\t')
         return set(paragraphs)
@@ -313,4 +344,87 @@ def trim_paragraphs (text, characters):
     """
     
     text = [paragraph.strip(characters) for paragraph in text.split('\n')]
+    return '\n'.join(text)
+
+
+def capitalyze (text):
+    """Capytalyze text: make it lower cased, and make
+    first possible letter to be upper cased.
+    
+    str `text` - text to be capitalyzed;
+    
+    return str - capitalized text.
+    """
+    
+    text = text.lower()
+    upper_char_index = None
+    
+    for i in range(len(text)):
+        if text[i] != text[i].upper():
+            upper_char_index = i
+            break
+    
+    if upper_char_index != None:
+        text = text[:upper_char_index+1].upper() + text[upper_char_index+1:]
+        
+    return text
+
+
+def change_headings_case (text, paragraphs, case='capitalised', tags=['h1']):
+    """Change headings case not changing tags in interactive mode.
+    
+    str `text` - text where to change headings case;
+    iterable `paragraphs` - list of int: paragraphs numbers of headings;
+    str `case` - what case to apply: "capitalised" (i.e. first letter upper, default),
+        "upper" for upper case or "lower" for lower case;
+    iterable `tags` - list of str: tags which case will not be changed.
+        Default: ['h1'] for "<h1>" and </h1> tags.
+        
+    return str - text where headings have changed case.
+    """
+    
+    message = ('\033[1mEnter one of the options:\033[0m\n'
+               '"y" – accept replacement;\n'
+               '"n" or empty input – reject replacement;\n'
+               'or enter your variant for replacement.\n')
+    print(message)
+
+    text = text.split('\n')
+    
+    for i in paragraphs:
+        changed_heading = text[i]
+        
+        for tag in tags:
+            changed_heading = re.split(rf'(</?{tag}>)', changed_heading)[1:-1]
+            
+            for j in range(len(changed_heading)):
+                if changed_heading[j] in (f'<{tag}>', f'</{tag}>'):
+                    continue
+                
+                if case == 'capitalised':
+                    changed_heading[j] = capitalyze(changed_heading[j])
+                    
+                elif case == 'upper':
+                    changed_heading[j] = changed_heading[j].upper()
+                    
+                elif case == 'lower':
+                    changed_heading[j] = changed_heading[j].lower()
+            
+            changed_heading = ''.join(changed_heading)
+        
+        message = '\n\033[1mOld heading\033[0m\n'
+        message += text[i]
+        message += '\n\n\033[1mReplacement\033[0m\n\n'
+        message += changed_heading
+        print(message)
+        
+        reply = input()
+        
+        if reply == 'y':
+            text[i] = changed_heading
+        elif reply in ('n', ''):
+            pass
+        else:
+            text[i] = reply
+            
     return '\n'.join(text)
