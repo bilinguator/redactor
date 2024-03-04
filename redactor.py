@@ -1,7 +1,7 @@
 import re
 from quotes_and_brackets import get_quotes
 
-def remove_tech_line_breaks (text, line_ends=get_quotes() | set('.!?;-–—‒')):
+def remove_tech_line_breaks (text, glue=' ', line_ends=get_quotes() | set('.!?…:;-–—‒؟؛।。！？：；一'), start_line=2):
     """Remove technical line breaks in the middle of sentences appearing as a result
     of converting text formats, often PDF to TXT.
 
@@ -13,15 +13,16 @@ def remove_tech_line_breaks (text, line_ends=get_quotes() | set('.!?;-–—‒'
 
     text = text.split('\n')
     text = [line.strip() for line in text]
-    text_edited = list([text.pop(0)])
+    text_edited = [text.pop(0) for _ in range(start_line)]
     
     for i in range(len(text)):
         if text[i] == '':
             continue
-        if text_edited[-1][-1] in line_ends:
+
+        if text_edited[-1][-1] in line_ends or text[i][0] in get_quotes():
             text_edited.append(text[i])
         else:
-            text_edited[-1] += ' ' + text[i]
+            text_edited[-1] += glue + text[i]
             
     return '\n'.join(text_edited)
 
@@ -84,7 +85,7 @@ def recover_apostrophes_by_lang (text, lang, replace_inner=False):
                 regex = rf"\b{q}'\w"
                 text = replace_by_regex(text, regex, '\'', '’')
     elif replace_inner or lang in ('be', 'uk'):
-        regex = rf"\w{q}'\w"
+        regex = '\w+\'\w+'
         text = replace_by_regex(text, regex, '\'', '’')
     return text
 
