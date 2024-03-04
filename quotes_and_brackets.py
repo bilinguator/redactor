@@ -37,7 +37,7 @@ def get_quotes (lang='all', level='primary'):
                 return [('„', '“'), ('»', '«')]
             case 'da':
                 return [('»', '«'), ('“', '”'), ('”', '”'), ('„', '“')]
-            case 'de':
+            case 'de' | 'cim':
                 return [('„', '“'), ('»', '«'), ('«', '»')]
             case 'en':
                 return [('“', '”'), ('‘', '’')]
@@ -108,7 +108,7 @@ def get_quotes (lang='all', level='primary'):
                 return [('‚', '‘'), ('›', '‹')]
             case 'da':
                 return [('›', '‹'), ('‘', '’'), ('’', '’')]
-            case 'de':
+            case 'de' | 'cim':
                 return [('‚', '‘'), ('›', '‹'), ('“', '”')]
             case 'el' | 'kk' | 'km':
                 return [('“', '”')]

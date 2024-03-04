@@ -88,6 +88,8 @@ def get_alphabet (lang='en', all_scripts=False):
         'ce.latin1991': 'AÄBCĊÇÇ̇DEFGĠHXẊIƵKQQ̇LMNOÖPRSŞTUÜVYZJƏŊ',
         # Chamorro
         'ch': 'AÅBCDEFGHIKLMNÑOPRSTUY',
+        # Cimbrian
+        'cim': 'ABCDEFGHIJKLMNOPQRSTUVWXYZÀÄÈÉÌÒÓÖÙÜ',
         # Corsican
         'co': 'AÀBCDEÈFGHIÌÏJLMNOÒPQRSTUÙÜVZ',
         # Cree Latin Script
