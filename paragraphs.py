@@ -395,7 +395,8 @@ def change_headings_case (text, paragraphs, case='capitalised', tags=['h1']):
         changed_heading = text[i]
         
         for tag in tags:
-            changed_heading = re.split(rf'(</?{tag}>)', changed_heading)[1:-1]
+            changed_heading = re.split(rf'(</?{tag}>)', changed_heading)
+            changed_heading = [c for c in changed_heading if c != '']
             
             for j in range(len(changed_heading)):
                 if changed_heading[j] in (f'<{tag}>', f'</{tag}>'):
@@ -418,11 +419,11 @@ def change_headings_case (text, paragraphs, case='capitalised', tags=['h1']):
         message += changed_heading
         print(message)
         
-        reply = input()
+        reply = input().strip()
         
-        if reply == 'y':
+        if reply.lower() in ('y', 'д'):
             text[i] = changed_heading
-        elif reply in ('n', ''):
+        elif reply.lower() in ('n', 'н', ''):
             pass
         else:
             text[i] = reply
