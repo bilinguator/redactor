@@ -67,7 +67,7 @@ def print_paragraphs_by_query (text, query, case_matters=False):
 
 
 def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_title=False,
-                     numbering_first=False):
+                     numbering_first=False, return_content=False):
     """Get and print paragraphs containing chapters' headings. 
     
     str `chapter` - string containing key word for a chapter, e.g.
@@ -97,7 +97,14 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
     bool `with_title` - specifies if chapters have titles;
     bool `numbering_first` - specifies if numbering precedes chapter key word
         (e.g., "XIX chapter");
-    return set - set of numbers of paragraphs containing chapters' headings.
+    bool `paragraphs_content` - ruturn both paragraphs indexes and content;
+
+    return:
+        if `paragraphs_content` equals False:
+            set of numbers of paragraphs containing chapters' headings;
+        if `paragraphs_content` equals True:
+            (list, list) - list of numbers of paragraphs containing chapters'
+            headings and list of paragraphs' contents;
 
     If the chapters' headings of your text look like "Chapter MMMCMXCIX — Epilogue",
         specify arguments as follows:
@@ -144,16 +151,26 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
     regex += '.+' if with_title else ''
     
     text = text.split('\n')
-    paragraphs = list()
+    paragraphs = []
+    paragraphs_content = []
+
     for i in range(len(text)):
         if bool(re.fullmatch(regex, text[i].strip())):
             paragraphs.append(i)
+            paragraphs_content.append(text[i])
     
     if bool(paragraphs):
         for i in paragraphs:
             print(i, text[i], sep='\t')
+
+        if return_content:
+            return paragraphs, paragraphs_content
+        
         return set(paragraphs)
     else:
+        if return_content:
+            return None, None
+        
         print('No paragraphs detected.')
         return set()
 
@@ -428,4 +445,28 @@ def change_headings_case (text, paragraphs, case='capitalised', tags=['h1']):
         else:
             text[i] = reply
             
+    return '\n'.join(text)
+
+
+def insert_corresponding_paragraphs(text, paragraphs, paragraphs_content):
+    """Insert paragraphs contents by their indexes to text.
+    
+    str `text` - text where to insert paragraphs;
+    list `paragraphs` - list of paragraphs numbers;
+    list `paragraphs_content` - list of paragraphs contents.
+    
+    return str - text with new paragraphs. 
+    """
+    
+    paragraphs = [paragraphs[i] - i for i in range(len(paragraphs))]
+    
+    text = text.split('\n')
+    print(len(text))
+    
+    for i in range(len(paragraphs)):
+        if paragraphs[i] < len(text):
+            text[paragraphs[i]] = paragraphs_content[i] + '\n' + text[paragraphs[i]]
+        else:
+            text.append(paragraphs_content[i])
+    
     return '\n'.join(text)
