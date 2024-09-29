@@ -80,7 +80,8 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
         - "ja" or "zh" for Japanese or Chinese numerals ("一"、"二"、"三"
             "四", etc.);
         - "text" for non-numeric characters; suitable if numerals in words are
-            presented ("One", "Two", "Three", etc.)
+            presented ("One", "Two", "Three", etc.);
+        - "am" for Abjad numerals ("፩", "፪", "፫", etc.);
         - "ar", "fa" or "ur" for Eastern Arabic numerals ("۰", "۱", "۲", etc.),
             used in Arabic, Persian and Urdu languages;
         - "abjad" for Abjad numerals ("ا", "ب", "ج", etc.);
@@ -133,6 +134,8 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
         regex = f'{regex}[०१२३४५६७८९০১২৩৪৫৬৭৮৯୦୧୨୩୪୫୬୭୮୯௦௧௨௩௪௫௬௭௮௯౦౧౨౩౪౫౬౭౮౯೦೧೨೩೪೫೬೭೮೯൦൧൨൩൪൫൬൭൮൯]+'.strip()
     elif numbering == 'th':
         regex = f'{regex}[๐๑๒๓๔๕๖๗๘๙]+'.strip()
+    elif numbering == 'am':
+        regex = f'{regex}[፩፪፫፬፭፮፯፰፱፲፳፴፵፶፷፸፹፺፻፼]+'.strip()
     elif numbering == 'lo':
         regex = f'{regex}[໐໑໒໓໔໕໖໗໘໙]+'.strip()
     elif numbering == 'tibetic':
@@ -244,6 +247,21 @@ def tag_characters (text, paragraphs, characters, dialogue_delimiter, tag='b'):
                 text[i] = f'<{tag}>{c}</{tag}>' + text[i][len(c):]
                 break
     return '\n'.join(text)
+
+
+def merge_speeches (text, delimiter='<delimiter>'):
+    """Merge paragraphs not starting with "<b>" or "<h1>" tags with a delimiter.
+    In the play, it may help to merge speeches of acting characters. 
+
+    str `text` - text in which to merge speeches;
+    str `delimiter` - glue wherewith to merge paragraphs;
+    return str - text with speeches merged.
+    """
+
+    text = text.split('\n')
+    text = [text[0]] + ['\n'+line if bool(re.fullmatch('<b>.*|<h1>.*', line)) \
+                                  else delimiter+line for line in text[1:]]
+    return ''.join(text)
 
 
 def remove_paragraphs (text, paragraphs):
