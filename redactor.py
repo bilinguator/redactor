@@ -1,7 +1,7 @@
 import re
 from quotes_and_brackets import get_quotes
 
-def remove_tech_line_breaks (text, glue=' ', line_ends=get_quotes() | set('.!?…:;-–—‒؟؛।。！？：；一'), start_line=2):
+def remove_tech_line_breaks (text, glue=' ', line_ends=get_quotes() | set('.!?…:;-–—‒؟؛।。！？：；一፡።፣፤፥፦፧፨፠'), start_line=2):
     """Remove technical line breaks in the middle of sentences appearing as a result
     of converting text formats, often PDF to TXT.
 
@@ -29,23 +29,19 @@ def remove_tech_line_breaks (text, glue=' ', line_ends=get_quotes() | set('.!?�
 def set_to_str (input_set):
     return ''.join(sorted(list(input_set)))
 
-def replace_by_regex (text, regex, old, new):
-    """Replace old substring to a new one in the places of the text matching
-    regular expression.
-
-    str `text` - text in which to conduct replacements;
-    str `regex` - regular expression by which to find places in the text;
-    str `old` - substring to be replaced;
-    str `new` - replacement;
-    return str - text with all replacements by regular expression conducted.
+def replace_by_regex(text, regex, old, new):
+    """Replace old substring to new one inside the hits found by regular expression.
+    
+    str `regex` - string with regular expression for searching hits by re.findall;
+    str `old` - string to be replace inside the hits found by regex;
+    str `new` - target replacement;
+    return: str - text with replacements in the hits.
     """
-
-    hits = re.finditer(regex, text)
-    for hit in hits:
-        start = hit.start()
-        end = hit.end()
-        text = text[:start] + text[start:end].replace(old, new) \
-            + text[end:]
+    
+    for hit in set(re.findall(regex, text)):
+        hit_replace = hit.replace(old, new)
+        text = text.replace(hit, hit_replace)
+        
     return text
 
 def recover_apostrophes_by_lang (text, lang, replace_inner=False):
@@ -99,17 +95,3 @@ def get_number_intervals_by_dash (text, dash):
     """
     
     return set(re.findall(f'\d+ ?{dash} ?\d+', text))
-
-def merge_speeches (text, delimiter='<delimiter>'):
-    """Merge paragraphs not starting with "<b>" or "<h1>" tags with a delimiter.
-    In the play, it may help to merge speeches of acting characters. 
-
-    str `text` - text in which to merge speeches;
-    str `delimiter` - glue wherewith to merge paragraphs;
-    return str - text with speeches merged.
-    """
-
-    text = text.split('\n')
-    text = [text[0]] + ['\n'+line if bool(re.fullmatch('<b>.*|<h1>.*', line)) \
-                                  else delimiter+line for line in text[1:]]
-    return ''.join(text)

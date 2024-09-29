@@ -67,7 +67,7 @@ def print_paragraphs_by_query (text, query, case_matters=False):
 
 
 def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_title=False,
-                     numbering_first=False):
+                     numbering_first=False, return_content=False):
     """Get and print paragraphs containing chapters' headings. 
     
     str `chapter` - string containing key word for a chapter, e.g.
@@ -80,7 +80,8 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
         - "ja" or "zh" for Japanese or Chinese numerals ("一"、"二"、"三"
             "四", etc.);
         - "text" for non-numeric characters; suitable if numerals in words are
-            presented ("One", "Two", "Three", etc.)
+            presented ("One", "Two", "Three", etc.);
+        - "am" for Abjad numerals ("፩", "፪", "፫", etc.);
         - "ar", "fa" or "ur" for Eastern Arabic numerals ("۰", "۱", "۲", etc.),
             used in Arabic, Persian and Urdu languages;
         - "abjad" for Abjad numerals ("ا", "ب", "ج", etc.);
@@ -97,7 +98,14 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
     bool `with_title` - specifies if chapters have titles;
     bool `numbering_first` - specifies if numbering precedes chapter key word
         (e.g., "XIX chapter");
-    return set - set of numbers of paragraphs containing chapters' headings.
+    bool `paragraphs_content` - ruturn both paragraphs indexes and content;
+
+    return:
+        if `paragraphs_content` equals False:
+            set of numbers of paragraphs containing chapters' headings;
+        if `paragraphs_content` equals True:
+            (list, list) - list of numbers of paragraphs containing chapters'
+            headings and list of paragraphs' contents;
 
     If the chapters' headings of your text look like "Chapter MMMCMXCIX — Epilogue",
         specify arguments as follows:
@@ -126,6 +134,8 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
         regex = f'{regex}[०१२३४५६७८९০১২৩৪৫৬৭৮৯୦୧୨୩୪୫୬୭୮୯௦௧௨௩௪௫௬௭௮௯౦౧౨౩౪౫౬౭౮౯೦೧೨೩೪೫೬೭೮೯൦൧൨൩൪൫൬൭൮൯]+'.strip()
     elif numbering == 'th':
         regex = f'{regex}[๐๑๒๓๔๕๖๗๘๙]+'.strip()
+    elif numbering == 'am':
+        regex = f'{regex}[፩፪፫፬፭፮፯፰፱፲፳፴፵፶፷፸፹፺፻፼]+'.strip()
     elif numbering == 'lo':
         regex = f'{regex}[໐໑໒໓໔໕໖໗໘໙]+'.strip()
     elif numbering == 'tibetic':
@@ -144,16 +154,26 @@ def detect_chapters (text, chapter='', numbering='arabic', delimiter='', with_ti
     regex += '.+' if with_title else ''
     
     text = text.split('\n')
-    paragraphs = list()
+    paragraphs = []
+    paragraphs_content = []
+
     for i in range(len(text)):
         if bool(re.fullmatch(regex, text[i].strip())):
             paragraphs.append(i)
+            paragraphs_content.append(text[i])
     
     if bool(paragraphs):
         for i in paragraphs:
             print(i, text[i], sep='\t')
+
+        if return_content:
+            return paragraphs, paragraphs_content
+        
         return set(paragraphs)
     else:
+        if return_content:
+            return None, None
+        
         print('No paragraphs detected.')
         return set()
 
@@ -227,6 +247,21 @@ def tag_characters (text, paragraphs, characters, dialogue_delimiter, tag='b'):
                 text[i] = f'<{tag}>{c}</{tag}>' + text[i][len(c):]
                 break
     return '\n'.join(text)
+
+
+def merge_speeches (text, delimiter='<delimiter>'):
+    """Merge paragraphs not starting with "<b>" or "<h1>" tags with a delimiter.
+    In the play, it may help to merge speeches of acting characters. 
+
+    str `text` - text in which to merge speeches;
+    str `delimiter` - glue wherewith to merge paragraphs;
+    return str - text with speeches merged.
+    """
+
+    text = text.split('\n')
+    text = [text[0]] + ['\n'+line if bool(re.fullmatch('<b>.*|<h1>.*', line)) \
+                                  else delimiter+line for line in text[1:]]
+    return ''.join(text)
 
 
 def remove_paragraphs (text, paragraphs):
@@ -395,7 +430,8 @@ def change_headings_case (text, paragraphs, case='capitalised', tags=['h1']):
         changed_heading = text[i]
         
         for tag in tags:
-            changed_heading = re.split(rf'(</?{tag}>)', changed_heading)[1:-1]
+            changed_heading = re.split(rf'(</?{tag}>)', changed_heading)
+            changed_heading = [c for c in changed_heading if c != '']
             
             for j in range(len(changed_heading)):
                 if changed_heading[j] in (f'<{tag}>', f'</{tag}>'):
@@ -418,13 +454,37 @@ def change_headings_case (text, paragraphs, case='capitalised', tags=['h1']):
         message += changed_heading
         print(message)
         
-        reply = input()
+        reply = input().strip()
         
-        if reply == 'y':
+        if reply.lower() in ('y', 'д'):
             text[i] = changed_heading
-        elif reply in ('n', ''):
+        elif reply.lower() in ('n', 'н', ''):
             pass
         else:
             text[i] = reply
             
+    return '\n'.join(text)
+
+
+def insert_corresponding_paragraphs(text, paragraphs, paragraphs_content):
+    """Insert paragraphs contents by their indexes to text.
+    
+    str `text` - text where to insert paragraphs;
+    list `paragraphs` - list of paragraphs numbers;
+    list `paragraphs_content` - list of paragraphs contents.
+    
+    return str - text with new paragraphs. 
+    """
+    
+    paragraphs = [paragraphs[i] - i for i in range(len(paragraphs))]
+    
+    text = text.split('\n')
+    print(len(text))
+    
+    for i in range(len(paragraphs)):
+        if paragraphs[i] < len(text):
+            text[paragraphs[i]] = paragraphs_content[i] + '\n' + text[paragraphs[i]]
+        else:
+            text.append(paragraphs_content[i])
+    
     return '\n'.join(text)

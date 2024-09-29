@@ -25,7 +25,7 @@ def get_quotes (lang='all', level='primary'):
                 return [('«', '»'), ('”', '“')]
             case 'hy' | 'el' | 'fa' | 'io' | 'kk' | 'km' | 'ps' | 'rm' | 'ug':
                 return [('«', '»')]
-            case 'am' | 'ca' | 'es' | 'eu' | 'gl' | 'it' | 'oc' | 'ru' | 'ti':
+            case 'am' | 'ca' | 'es' | 'eu' | 'gl' | 'it' | 'oc' | 'qu' | 'ru' | 'ti':
                 return [('«', '»'), ('“', '”')]
             case 'az' | 'be' | 'no' | 'uz':
                 return [('«', '»'), ('„', '“')]

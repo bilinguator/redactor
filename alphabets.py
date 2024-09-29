@@ -149,7 +149,7 @@ def get_alphabet (lang='en', all_scripts=False):
         # French
         'fr': 'ABCDEFGHIJKLMNOPQRSTUVWXYZÉÂÊÎÔÛÀÈÙËÏÜŸÇ',
         # Western Frisian
-        'fy': 'AÂBCDEÊÉFGHIYJKLMNOÔPQRSTUÛÚVWXZ',
+        'fy': 'AÂBCDEÊÉFGHIYJKLMNOÔPQRSTUÛÚVWXZŒ',
         # Irish, Gaelic
         'ga': 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚ',
         # Scottish Gaelic
